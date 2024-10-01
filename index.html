@@ -8,59 +8,89 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: #f2f2f2;
         }
         #quiz-container {
             background-color: white;
-            border-radius: 8px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 400px;
             text-align: center;
         }
-        #question-image {
-            max-width: 100%;
+        h2 {
             margin-bottom: 20px;
         }
         .options {
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
+            justify-content: space-between;
+            margin-top: 20px;
         }
         .option {
-            padding: 10px 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            background-color: #2196F3; /* Mavi renk */
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
             cursor: pointer;
+            flex: 1;
+            margin: 0 5px;
+            transition: background-color 0.3s;
         }
         .option:hover {
-            background-color: #f0f0f0;
+            background-color: #1976D2; /* Hover rengi */
         }
         #next-button {
+            margin-top: 20px;
             padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #008CBA;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
         }
-        #next-button:hover {
-            background-color: #45a049;
+        #next-button:disabled {
+            background-color: #cccccc;
         }
-        #answer-image {
-            max-width: 100%;
-            margin-top: 20px;
-            display: none;
+        img {
+            width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+        #user-form {
+            margin-bottom: 20px;
+        }
+        #user-form input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
+        }
+        #user-form button {
+            padding: 10px 20px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div id="quiz-container">
-        <img id="question-image" src="" alt="Soru">
-        <div class="options">
+        <div id="user-form">
+            <label for="username">Kullanıcı Adı:</label>
+            <input type="text" id="username" required>
+            <button id="start-button">Başla</button>
+        </div>
+        <h2 id="user-greeting" style="display: none;"></h2>
+        <img id="question-image" src="" alt="Soru" style="display: none;">
+        <div class="options" style="display: none;">
             <div class="option" data-option="A">A</div>
             <div class="option" data-option="B">B</div>
             <div class="option" data-option="C">C</div>
@@ -68,102 +98,125 @@
             <div class="option" data-option="E">E</div>
         </div>
         <button id="next-button" disabled>Diğer Soruya Geç</button>
-        <img id="answer-image" src="" alt="Cevap">
+        <img id="answer-image" src="" alt="Cevap" style="display: none;">
     </div>
 
     <script>
-        const questions = [];
-        const answeredQuestions = new Set();
-        let currentQuestionIndex = 0;
-        const answerKey = {};
+        // Soru ve cevap verileri
+        const questions = [
+            { id: 1, image: 'https://raw.githubusercontent.com/yasarduzcan/sorubankasi/refs/heads/main/sorular/soru1.PNG', answerImage: 'https://raw.githubusercontent.com/yasarduzcan/sorubankasi/refs/heads/main/%C3%A7%C3%B6z%C3%BCmler/cevap1.PNG' },
+            { id: 2, image: 'https://raw.githubusercontent.com/yasarduzcan/sorubankasi/refs/heads/main/sorular/soru2.PNG', answerImage: 'https://raw.githubusercontent.com/yasarduzcan/sorubankasi/refs/heads/main/%C3%A7%C3%B6z%C3%BCmler/cevap2.PNG' },
+            { id: 3, image: 'https://raw.githubusercontent.com/yasarduzcan/sorubankasi/refs/heads/main/sorular/soru3.PNG', answerImage: 'https://raw.githubusercontent.com/yasarduzcan/sorubankasi/refs/heads/main/%C3%A7%C3%B6z%C3%BCmler/cevap3.PNG' },
+            // Diğer sorular eklenebilir...
+        ];
 
-        // GitHub API'den soru ve cevapları çek
-        async function fetchQuestions() {
-            const questionsResponse = await fetch('https://api.github.com/repos/yasarduzcan/sorubankasi/contents/sorular');
-            const answersResponse = await fetch('https://api.github.com/repos/yasarduzcan/sorubankasi/contents/%C3%A7%C3%B6zümler');
+        // Cevap anahtarını bir TXT dosyasından çekme
+        const answerKeyUrl = 'https://raw.githubusercontent.com/yasarduzcan/sorubankasi/refs/heads/main/cevapanahtari.txt';
 
-            const questionFiles = await questionsResponse.json();
-            const answerFiles = await answersResponse.json();
-
-            questionFiles.forEach((file, index) => {
-                if (file.name.endsWith('.PNG')) {
-                    questions.push({
-                        id: index + 1,
-                        image: file.download_url,
-                        answerImage: answerFiles[index]?.download_url || ''
-                    });
-                }
+        let answerKey = {};
+        fetch(answerKeyUrl)
+            .then(response => response.text())
+            .then(text => {
+                text.split('\n').forEach(line => {
+                    const [questionNumber, answer] = line.split('-').map(part => part.trim());
+                    answerKey[questionNumber] = answer;
+                });
             });
 
-            await fetchAnswerKey();
-            loadQuestion();
+        let currentQuestionIndex = 0;
+        let answeredQuestions = new Set();
+
+        const questionImage = document.getElementById('question-image');
+        const options = document.querySelectorAll('.option');
+        const nextButton = document.getElementById('next-button');
+        const answerImage = document.getElementById('answer-image');
+        const usernameInput = document.getElementById('username');
+        const startButton = document.getElementById('start-button');
+        const userGreeting = document.getElementById('user-greeting');
+        const userForm = document.getElementById('user-form');
+
+        startButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            if (username) {
+                userGreeting.textContent = `${username}, hoş geldin!`;
+                userGreeting.style.display = 'block';
+                userForm.style.display = 'none';
+                loadUserQuestions(username);
+                loadQuestion();
+                document.querySelector('.options').style.display = 'flex';
+                questionImage.style.display = 'block';
+            }
+        });
+
+        function loadUserQuestions(username) {
+            const savedData = localStorage.getItem(`answeredQuestions_${username}`);
+            if (savedData) {
+                answeredQuestions = new Set(JSON.parse(savedData));
+            }
         }
 
-        // Cevap anahtarını çek
-        async function fetchAnswerKey() {
-            const response = await fetch('https://raw.githubusercontent.com/yasarduzcan/sorubankasi/refs/heads/main/cevapanahtari.txt');
-            const text = await response.text();
-            const lines = text.split('\n');
-            lines.forEach((line) => {
-                if (line.trim()) {
-                    const [questionNum, correctAnswer] = line.split('-').map(item => item.trim());
-                    answerKey[questionNum] = correctAnswer; // "1", "2" şeklinde ayarlıyoruz
-                }
-            });
-            console.log(answerKey); // Konsola yazdırarak cevap anahtarını kontrol edin
+        function saveUserProgress(username) {
+            localStorage.setItem(`answeredQuestions_${username}`, JSON.stringify(Array.from(answeredQuestions)));
         }
 
         function loadQuestion() {
-            if (questions.length === 0) return;
-            const question = questions[currentQuestionIndex];
-            document.getElementById('question-image').src = question.image;
-            document.getElementById('answer-image').style.display = 'none';
-            document.getElementById('next-button').disabled = true;
-
-            document.querySelectorAll('.option').forEach(option => {
-                option.style.backgroundColor = '';
-                option.style.color = '';
-            });
-        }
-
-        function checkAnswer(selectedOption) {
-            const question = questions[currentQuestionIndex];
-            const correctAnswer = answerKey[question.id]; // Soru ID'sine göre doğru cevabı alıyoruz
-            if (selectedOption === correctAnswer) {
-                event.target.style.backgroundColor = 'green';
-                event.target.style.color = 'white';
-                document.getElementById('next-button').disabled = false;
-            } else {
-                event.target.style.backgroundColor = 'red';
-                event.target.style.color = 'white';
-                document.getElementById('answer-image').src = question.answerImage;
-                document.getElementById('answer-image').style.display = 'block';
-                document.getElementById('next-button').disabled = false;
-            }
-            answeredQuestions.add(question.id);
-        }
-
-        function nextQuestion() {
-            do {
-                currentQuestionIndex = Math.floor(Math.random() * questions.length);
-            } while (answeredQuestions.has(questions[currentQuestionIndex].id) && answeredQuestions.size < questions.length);
-
-            if (answeredQuestions.size === questions.length) {
+            const availableQuestions = questions.filter(q => !answeredQuestions.has(q.id));
+            if (availableQuestions.length === 0) {
                 alert('Tüm sorular cevaplandı!');
                 return;
             }
 
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            const question = availableQuestions[randomIndex];
+
+            questionImage.src = question.image;
+            answerImage.style.display = 'none';
+            nextButton.disabled = true;
+
+            options.forEach(option => {
+                option.style.backgroundColor = '#2196F3'; // Mavi
+                option.style.color = 'white';
+            });
+
+            currentQuestionIndex = questions.findIndex(q => q.id === question.id);
+        }
+
+        function checkAnswer(selectedOption) {
+            const questionNumber = currentQuestionIndex + 1; // Soru numarası
+            const correctAnswer = answerKey[questionNumber];
+
+            if (selectedOption === correctAnswer) {
+                options.forEach(option => {
+                    if (option.dataset.option === selectedOption) {
+                        option.style.backgroundColor = 'green'; // Doğru
+                    }
+                });
+                nextButton.disabled = false;
+            } else {
+                options.forEach(option => {
+                    if (option.dataset.option === selectedOption) {
+                        option.style.backgroundColor = 'red'; // Yanlış
+                    } else if (option.dataset.option === correctAnswer) {
+                        option.style.backgroundColor = 'green'; // Doğru
+                    }
+                });
+                answerImage.src = questions[currentQuestionIndex].answerImage;
+                answerImage.style.display = 'block';
+                nextButton.disabled = false;
+            }
+            answeredQuestions.add(questionNumber);
+            saveUserProgress(usernameInput.value.trim());
+        }
+
+        function nextQuestion() {
             loadQuestion();
         }
 
-        document.querySelectorAll('.option').forEach(option => {
+        options.forEach(option => {
             option.addEventListener('click', (event) => checkAnswer(event.target.dataset.option));
         });
 
-        document.getElementById('next-button').addEventListener('click', nextQuestion);
-
-        // Soru ve cevapları çek
-        fetchQuestions();
+        nextButton.addEventListener('click', nextQuestion);
     </script>
 </body>
 </html>

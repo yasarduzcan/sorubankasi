@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+
+        // Firebase yapılandırması
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkoZQgyzGlIiTs-8nXIPwYWSprgYIDshc",
+            authDomain: "basariuzemkayit.firebaseapp.com",
+            projectId: "basariuzemkayit",
+            storageBucket: "basariuzemkayit.firebasestorage.app",
+            messagingSenderId: "999831886824",
+            appId: "1:999831886824:web:5d64fb8c85fc0416d3e25d",
+            measurementId: "G-WNJM4GPZGL"
+        };
+
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Admin kontrolü
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                const userData = userDoc.data();
+                if (userData.role !== 'admin') {
+                    alert('Bu sayfaya erişim yetkiniz yok!');
+                    window.location.href = 'index.html';
+                } else {
+                    loadUsers();
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Kullanıcıları yükleme
+        async function loadUsers() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+
+            const usersQuery = query(collection(db, 'users'), where('role', '==', 'user'));
+            const usersSnapshot = await getDocs(usersQuery);
+            
+            usersSnapshot.forEach(doc => {
+                const userData = doc.data();
+                const userElement = document.createElement('div');
+                userElement.className = 'border p-4 rounded-lg';
+                userElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">${userData.name}</p>
+                            <p class="text-gray-600">${userData.email}</p>
+                            <p class="text-sm ${userData.isApproved ? 'text-green-600' : 'text-red-600'}">
+                                ${userData.isApproved ? 'Onaylanmış' : 'Onay Bekliyor'}
+                            </p>
+                        </div>
+                        <button onclick="toggleApproval('${doc.id}', ${!userData.isApproved})"
+                                class="px-4 py-2 rounded ${userData.isApproved ? 
+                                'bg-red-500 hover:bg-red-600' : 
+                                'bg-green-500 hover:bg-green-600'} text-white">
+                            ${userData.isApproved ? 'Onayı Kaldır' : 'Onayla'}
+                        </button>
+                    </div>
+                `;
+                userList.appendChild(userElement);
+            });
+        }
+
+        // Kullanıcı onay durumunu değiştirme
+        window.toggleApproval = async function(userId, newApprovalStatus) {
+            try {
+                await updateDoc(doc(db, 'users', userId), {
+                    isApproved: newApprovalStatus
+                });
+                loadUsers();
+            } catch (error) {
+                alert('Hata: ' + error.message);
+            }
+        }
+
+        // Çıkış yapma
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert('Hata: ' + error.message);
+            }
+        }
+
+        // Global scope'a fonksiyonları ekleyelim
+        window.loadUsers = loadUsers;
+    </script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold">Kullanıcı Onay Paneli</h1>
+                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    Çıkış Yap
+                </button>
+            </div>
+
+            <div id="userList" class="space-y-4">
+                <!-- Kullanıcılar buraya dinamik olarak eklenecek -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Başarı UZEM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-sans">
+    <header class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-blue-600">
+                Başarı UZEM
+            </div>
+            
+            <!-- Masaüstü Menü -->
+            <nav class="hidden md:flex space-x-6">
+                <a href="index.html" class="hover:text-blue-600">Ana Sayfa</a>
+                <a href="kurslarimiz.html" class="hover:text-blue-600">Kurslarımız</a>
+                <a href="nasilkayitolabilirim.html" class="hover:text-blue-600">Nasıl Kayıt Olabilirim?</a>
+                <a href="yorumlar.html" class="hover:text-blue-600">Öğrenci Yorumları</a>
+                <a href="yayinlar.html" class="hover:text-blue-600">Yayınlarımız</a>
+            </nav>
+
+            <!-- Mobil Menü Butonu -->
+            <div class="md:hidden flex items-center">
+                <button id="mobile-menu-toggle" class="text-blue-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Giriş ve Üye Ol Butonları -->
+            <div class="flex space-x-4">
+                <a href="login.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Giriş Yap</a>
+                <a href="register.html" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Üye Ol</a>
+            </div>
+        </div>
+
+        <!-- Mobil Menü Açılır Penceresi -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white shadow-lg">
+            <div class="flex flex-col p-4 space-y-4">
+                <a href="index.html" class="hover:text-blue-600">Ana Sayfa</a>
+                <a href="kurslarimiz.html" class="hover:text-blue-600">Kurslarımız</a>
+                <a href="nasilkayitolabilirim.html" class="hover:text-blue-600">Nasıl Kayıt Olabilirim?</a>
+                <a href="yorumlar.html" class="hover:text-blue-600">Öğrenci Yorumları</a>
+                <a href="yayinlar.html" class="hover:text-blue-600">Yayınlarımızİletişim</a>
+            </div>
+        </div>
+    </header>
+            </div>
+        </div>
+    <div class="container mx-auto px-4 py-16">
+        <header class="text-center mb-16 animate-fade-in-up">
+            <h1 class="text-5xl font-extrabold text-blue-600 mb-4">Başarı UZEM</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Profesyonel Gelişim İçin Kapsamlı Uzaktan Eğitim Platformu
+            </p>
+        </header>
+
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6 animate-fade-in-up">
+                <div class="bg-white p-8 rounded-2xl custom-shadow">
+                    <h2 class="text-3xl font-bold text-blue-700 mb-6">Nasıl Kayıt Olabilirim?</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                                1
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg">Kayıt Olmak İstediğiniz Kursu Seçin</h3>
+                                <p class="text-gray-600">İstediğiniz kursu detaylı olarak inceleyin</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                                2
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg">Ödeme İşlemi Tamamlayın</h3>
+                                <p class="text-gray-600">Shopier üzerinden güvenli ödeme yapabilirsiniz</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                                3
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg">Sitemize Üye Kaydı oluştun</h3>
+                                <p class="text-gray-600">Admin Onay sürecinden sonra siteye giriş yapabilirsiniz</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                                4
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg">Eğitime Başlama</h3>
+                                <p class="text-gray-600">Canlı dersler ve diğer tüm içeriklere anında erişim</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6 animate-fade-in-up">
+                <div class="bg-white p-8 rounded-2xl custom-shadow">
+                    <h2 class="text-3xl font-bold text-blue-700 mb-6">Platform Özellikleri</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-center space-x-4 transform transition hover:scale-105">
+                            <i class="fas fa-video text-blue-500 text-2xl"></i>
+                            <span class="text-gray-700">Canlı Dersler</span>
+                        </li>
+                        <li class="flex items-center space-x-4 transform transition hover:scale-105">
+                            <i class="fas fa-file-alt text-blue-500 text-2xl"></i>
+                            <span class="text-gray-700">Detaylı Dokümanlar</span>
+                        </li>
+                        <li class="flex items-center space-x-4 transform transition hover:scale-105">
+                            <i class="fas fa-bell text-blue-500 text-2xl"></i>
+                            <span class="text-gray-700">Anlık Bildirimler</span>
+                        </li>
+                        <li class="flex items-center space-x-4 transform transition hover:scale-105">
+                            <i class="fas fa-comments text-blue-500 text-2xl"></i>
+                            <span class="text-gray-700">Öğrenci Destek Hattı</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-16 text-center animate-fade-in-up">
+            <div class="bg-white p-6 rounded-2xl max-w-2xl mx-auto custom-shadow">
+                <h2 class="text-2xl font-bold text-blue-700 mb-4">Hemen Destek Alın</h2>
+                <div class="flex justify-center items-center space-x-4">
+                    <a href="https://wa.me/905445694037" target="_blank" class="bg-green-500 text-white px-6 py-3 rounded-full hover:bg-green-600 transition flex items-center">
+                        <i class="fab fa-whatsapp mr-2 text-xl"></i>WhatsApp Destek Hattı
+                    </a>
+                    <span class="text-gray-600">+90 544 569 4037</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
